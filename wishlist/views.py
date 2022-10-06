@@ -15,8 +15,10 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 
 import datetime
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.urls import reverse
+
+from wishlist.forms import WishlistFormAjax
 
 def show_json_by_id(request, id):
     data = BarangWishlist.objects.filter(pk=id)
@@ -80,3 +82,23 @@ def show_wishlist(request):
         'last_login': request.COOKIES['last_login'],
 }
     return render(request, "wishlist.html",context)
+
+@login_required(login_url='/wishlist/login')
+def show_wishlist_ajax(request):
+    context = {
+        'nama': 'Dipa Alhaza',
+        'last_login': request.COOKIES.get('last_login'),
+    }
+    return render(request, "wishlist_ajax.html", context)
+
+@login_required(login_url='/wishlist/login')
+def submit_ajax(request):
+    if (request.method == 'POST'):
+        form = WishlistFormAjax(request.POST or None)
+        if (form.is_valid()):
+            nama_barang = form.cleaned_data['nama_barang']
+            harga_barang = form.cleaned_data['harga_barang']
+            deskripsi = form.cleaned_data['deskripsi']
+            new_wishlist = BarangWishlist.objects.create(nama_barang=nama_barang, harga_barang=harga_barang, deskripsi=deskripsi)
+            response = HttpResponseRedirect(reverse("wishlist:show_wishlist_ajax"))
+            return response
