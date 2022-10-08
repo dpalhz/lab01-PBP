@@ -94,11 +94,14 @@ def show_wishlist_ajax(request):
 @login_required(login_url='/wishlist/login')
 def submit_ajax(request):
     if (request.method == 'POST'):
+        data = {}
         form = WishlistFormAjax(request.POST or None)
         if (form.is_valid()):
             nama_barang = form.cleaned_data['nama_barang']
             harga_barang = form.cleaned_data['harga_barang']
             deskripsi = form.cleaned_data['deskripsi']
             new_wishlist = BarangWishlist.objects.create(nama_barang=nama_barang, harga_barang=harga_barang, deskripsi=deskripsi)
-            response = HttpResponseRedirect(reverse("wishlist:show_wishlist_ajax"))
-            return response
+            data["nama_barang"] = nama_barang
+            data["harga_barang"] = harga_barang
+            data["deskripsi"] = deskripsi
+            return JsonResponse(data)
