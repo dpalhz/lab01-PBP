@@ -33,7 +33,7 @@
     
     {% comment %} Tambahkan data di bawah baris ini {% endcomment %}
 
-<table class="table table-striped">
+<table class="table table-striped" id="table">
   <thead>
     <tr class="bg-dark">
       <th scope="col"class="text-light">Nama Barang</th>
@@ -82,7 +82,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script>
 
-const table = document.getElementById('table')
+const table = document.getElementById('body-table')
 
 $(document).ready(() => {
   $.get('/wishlist/json', (wishlists) => {
@@ -98,6 +98,7 @@ $(document).ready(() => {
   })
   
   $('#form').submit((e) => {
+    e.preventDefault();
     $.ajax({
       url: '/wishlist/ajax/submit',
       type: 'POST',
@@ -105,11 +106,11 @@ $(document).ready(() => {
       data: $('#form').serialize(),
       success: (resp) => {
         // console.log(resp)
-        $('#table').append(`
+        $('#body-table').append(`
           <tr class="item-table-row">
-            <th class="item-table-cell">${resp.nama_barang}</th>
-            <th class="item-table-cell">${resp.harga_barang}</th>
-            <th class="item-table-cell">${resp.deskripsi}</th>
+            <td class="item-table-cell">${resp.nama_barang}</td>
+            <td class="item-table-cell">${resp.harga_barang}</td>
+            <td class="item-table-cell">${resp.deskripsi}</td>
           </tr>
         `)
       },
